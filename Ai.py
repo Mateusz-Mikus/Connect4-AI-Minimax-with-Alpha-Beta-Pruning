@@ -1,4 +1,5 @@
 import Board
+import random
 
 def evaluate_window(window, piece):
     score = 0
@@ -100,3 +101,19 @@ def minimax(board, depth, maximizingBot):
                 if result < worst_result:
                     worst_result = result
         return worst_result
+
+
+def get_best_move(board, depth):
+    valid_loc = [c for c in range(7) if Board.is_valid_location(board, c)]
+    best_col = random.choice(valid_loc)
+    best_result = -1000000000
+    for col in range(7):
+        if Board.is_valid_location(board, col):
+            Board.drop_piece(board, col, 2)
+            result = minimax(board, depth-1, False)
+            undo_move(board, col)
+
+            if result > best_result:
+                best_result = result
+                best_col = col
+    return best_col
