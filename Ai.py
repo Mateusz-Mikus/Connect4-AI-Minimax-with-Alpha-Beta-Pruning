@@ -1,9 +1,10 @@
+import Board
+
 def evaluate_window(window, piece):
     score = 0
     opp_piece = 1 if piece == 2 else 2
-    if window.count(piece) == 4:
-        score += 10000
-    elif window.count(piece) == 3 and window.count(0) == 1:
+
+    if window.count(piece) == 3 and window.count(0) == 1:
         score += 50
     elif window.count(piece) == 2 and window.count(0) == 2:
         score += 10
@@ -12,8 +13,6 @@ def evaluate_window(window, piece):
         score -= 40
     elif window.count(opp_piece) == 3 and window.count(0) == 1:
         score -= 500
-    elif window.count(opp_piece) == 4:
-        score -= 10000
 
     return score
 
@@ -41,3 +40,63 @@ def evaluate_board(board, piece):
             score += evaluate_window(window, piece)
 
     return score
+
+def undo_move(board, col):
+    for r in range(6):
+        if board[r][col] != 0:
+            board[r][col] = 0
+            return
+
+def is_game_finished(board):
+    if Board.check_win(board, 1):
+        return True
+    if Board.check_win(board, 2):
+        return True
+
+    for c in range(7):
+        if Board.is_valid_location(board, c):
+            return False
+    return True
+
+
+
+def minimax(board, depth, maximizingBot):
+
+    if depth == 0 or is_game_finished(board):
+        if is_game_finished(board):
+            if Board.check_win(board, 2):
+                return 1000000
+            elif Board.check_win(board, 1):
+                return -1000000
+            else:
+                return 0
+        else:
+            return evaluate_board(board, 2)
+
+    if maximizingBot:
+        best_result = -100000000
+        for col in range(7):
+            if Board.is_valid_location(board, col):
+                Board.drop_piece(board, col, 2)
+
+                result = minimax(board, depth-1, False)
+
+                undo_move(board, col)
+
+                if result > best_result:
+                    best_result = result
+        return best_result
+
+    else:
+        worst_result = 100000000
+        for col in range(7):
+            if Board.is_valid_location(board, col):
+                Board.drop_piece(board, col, 1)
+
+                result = minimax(board, depth-1, True)
+
+                undo_move(board, col)
+
+                if result < worst_result:
+                    worst_result = result
+        return worst_result
