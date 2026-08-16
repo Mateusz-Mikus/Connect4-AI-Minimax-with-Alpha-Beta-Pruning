@@ -61,6 +61,60 @@ def is_game_finished(board):
 
 
 
+#def minimax_alpha_beta(board, depth, maximizingBot, alpha, beta):
+    if depth == 0 or is_game_finished(board):
+        if is_game_finished(board):
+            if Board.check_win(board, 2):
+                return 1000000
+            elif Board.check_win(board, 1):
+                return -1000000
+            else:
+                return 0
+        else:
+            return evaluate_board(board, 2)
+
+    if maximizingBot:
+        best_result = -100000000
+        for col in range(7):
+            if Board.is_valid_location(board, col):
+                Board.drop_piece(board, col, 2)
+
+                result = minimax_alpha_beta(board, depth-1, False, alpha, beta)
+
+                undo_move(board, col)
+                if result > best_result:
+                    best_result = result
+
+                    alpha = max(best_result, alpha)
+
+                if alpha >= beta:
+                    break
+
+                
+        return best_result  
+
+    else:
+        worst_result = 100000000
+        for col in range(7):
+            if Board.is_valid_location(board, col):
+                Board.drop_piece(board, col, 1)
+
+                result = minimax_alpha_beta(board, depth-1, True, alpha, beta)
+
+                undo_move(board, col)
+
+                if result < worst_result:
+                    worst_result = result
+
+                    beta = min(beta, worst_result)
+
+
+                if alpha >= beta:
+                    break
+        return worst_result
+
+
+
 def minimax(board, depth, maximizingBot):
 
     if depth == 0 or is_game_finished(board):
@@ -83,7 +137,6 @@ def minimax(board, depth, maximizingBot):
                 result = minimax(board, depth-1, False)
 
                 undo_move(board, col)
-
                 if result > best_result:
                     best_result = result
         return best_result

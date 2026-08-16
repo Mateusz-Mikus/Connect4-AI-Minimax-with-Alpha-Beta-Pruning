@@ -2,6 +2,7 @@ import pygame
 import sys
 import Board
 import random
+import Ai
 
 pygame.init()
 pygame.font.init()
@@ -96,11 +97,12 @@ while running:
 
     if turn == 2 and winner is None:
         valid_loc = [c for c in range(7) if Board.is_valid_location(myBoard, c)]
-        if valid_loc:
-            random_col = random.choice(valid_loc)
-            Board.drop_piece(myBoard, random_col, turn)
-            draw_board(myBoard)
 
+        if valid_loc:
+            
+            best_col = Ai.get_best_move(myBoard,6)
+            Board.drop_piece(myBoard, best_col, turn)
+            draw_board(myBoard)
             if Board.check_win(myBoard, turn):
                 winner = turn
                 show_message = True
