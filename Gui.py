@@ -1,7 +1,6 @@
 import pygame
 import sys
 import Board
-import random
 import Ai
 import time
 
@@ -18,7 +17,7 @@ white = (255, 255, 255)
 
 
 width = 700
-height = 800
+height = 950
 radius = 40
 
 screen = pygame.display.set_mode((width, height))
@@ -32,6 +31,21 @@ myFont = pygame.font.SysFont("arial", 30, bold=True)
 restartButton = pygame.Rect(540, 20, 140, 170)
 scorePanel = pygame.Rect(20, 20, 500, 60)
 timePanel = pygame.Rect(20, 115, 500, 60)
+levelPanel = pygame.Rect(110, 801,460, 50)
+subLevelPanel = myFont.render("Poziom trudności (zagłębienie)", True, white)
+pygame.draw.rect(screen, black, levelPanel)
+screen.blit(subLevelPanel, (120, 807))
+
+
+ai_depth = 2
+lev_array = []
+
+for i in range(8):
+
+    lev_rect = pygame.Rect(20 + 86*i, 880, 50, 50)
+    lev_array.append((lev_rect, i+1))
+
+
 
 pygame.draw.rect(screen, blue, restartButton)
 pygame.draw.rect(screen, blue, scorePanel)
@@ -47,6 +61,11 @@ show_message = False
 
 def draw_board(board):
     pygame.draw.rect(screen, blue, scorePanel)
+    for lev_rect, level in lev_array:
+        theColor = red if ai_depth == level else blue
+        pygame.draw.rect(screen, theColor, lev_rect)
+        sub_for_level = myFont.render(str(level), True, white)
+        screen.blit(sub_for_level, (37+86*(level-1), 887))
     for c in range(7):
         for r in range(6):
             # Parametry: (ekran, kolor, (X, Y, szerokość, wysokość))
@@ -89,6 +108,19 @@ while running:
                 screen.blit(timeSub, (35, 130))
                 draw_board(myBoard)
                 continue 
+
+            if turn == 1:
+                button_clicked = False
+                for lev_rect, level in lev_array:
+                    if lev_rect.collidepoint(event.pos):
+                        ai_depth = level
+                        button_clicked = True
+                        draw_board(myBoard)
+                        break
+
+                if button_clicked:
+                    continue
+                        
             
             if turn == 1 and not (restartButton.collidepoint(event.pos)):
                 posX = event.pos[0]
@@ -111,7 +143,7 @@ while running:
 
         if valid_loc:
             start_time = time.time()
-            best_col = Ai.get_best_move(myBoard,5)
+            best_col = Ai.get_best_move(myBoard,ai_depth)
             end_time = time.time()
             think_time = end_time - start_time
             subTime2 = myFont.render(f"{think_time:.3f} s", True, white)
