@@ -3,6 +3,7 @@ import sys
 import Board
 import random
 import Ai
+import time
 
 pygame.init()
 pygame.font.init()
@@ -17,7 +18,7 @@ white = (255, 255, 255)
 
 
 width = 700
-height = 700
+height = 800
 radius = 40
 
 screen = pygame.display.set_mode((width, height))
@@ -28,13 +29,18 @@ pygame.display.set_caption("Connect four")
 myFont = pygame.font.SysFont("arial", 30, bold=True)
 
 
-restartButton = pygame.Rect(540, 20, 140, 60)
-scorePanel = pygame.Rect(20, 20, 500, 60) 
+restartButton = pygame.Rect(540, 20, 140, 170)
+scorePanel = pygame.Rect(20, 20, 500, 60)
+timePanel = pygame.Rect(20, 115, 500, 60)
 
 pygame.draw.rect(screen, blue, restartButton)
 pygame.draw.rect(screen, blue, scorePanel)
+pygame.draw.rect(screen, blue, timePanel)
 sub = myFont.render("Restart", True, white)
+timeSub = myFont.render("Czas myślenia bota: ", True, white)
 screen.blit(sub, (555, 35))
+screen.blit(timeSub, (35, 130))
+
 
 myBoard = Board.createBoard()
 show_message = False
@@ -44,7 +50,7 @@ def draw_board(board):
     for c in range(7):
         for r in range(6):
             # Parametry: (ekran, kolor, (X, Y, szerokość, wysokość))
-            pygame.draw.rect(screen, blue, (c * 100, (r+1) * 100, 90, 90))
+            pygame.draw.rect(screen, blue, (c * 100, (r+2) * 100, 90, 90))
 
             if board[r][c] == 1:
                 color = red
@@ -55,7 +61,7 @@ def draw_board(board):
 
             # Parametry: (ekran, kolor, (środek_X, środek_Y), promień)
             center_x = int(c*100 + 45)
-            center_y = int((r+1) * 100 + 45)
+            center_y = int((r+2) * 100 + 45)
 
             pygame.draw.circle(screen, color, (center_x, center_y), radius)
     
@@ -79,6 +85,8 @@ while running:
                 show_message = False
                 myBoard = Board.createBoard()
                 turn = 1
+                pygame.draw.rect(screen, blue, timePanel)
+                screen.blit(timeSub, (35, 130))
                 draw_board(myBoard)
                 continue 
             
@@ -96,11 +104,18 @@ while running:
                     turn = 2
 
     if turn == 2 and winner is None:
+        pygame.draw.rect(screen, blue, timePanel)
+        screen.blit(timeSub, (35, 130))
+        pygame.display.update()
         valid_loc = [c for c in range(7) if Board.is_valid_location(myBoard, c)]
 
         if valid_loc:
-            
-            best_col = Ai.get_best_move(myBoard,6)
+            start_time = time.time()
+            best_col = Ai.get_best_move(myBoard,5)
+            end_time = time.time()
+            think_time = end_time - start_time
+            subTime2 = myFont.render(f"{think_time:.3f} s", True, white)
+            screen.blit(subTime2, (360, 130))
             Board.drop_piece(myBoard, best_col, turn)
             draw_board(myBoard)
             if Board.check_win(myBoard, turn):
