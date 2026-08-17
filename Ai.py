@@ -61,7 +61,7 @@ def is_game_finished(board):
 
 
 
-#def minimax_alpha_beta(board, depth, maximizingBot, alpha, beta):
+def minimax_alpha_beta(board, depth, maximizingBot, alpha, beta):
     if depth == 0 or is_game_finished(board):
         if is_game_finished(board):
             if Board.check_win(board, 2):
@@ -156,17 +156,20 @@ def minimax(board, depth, maximizingBot):
         return worst_result
 
 
-def get_best_move(board, depth):
+def get_best_move(board, depth, with_alpha_beta):
     valid_loc = [c for c in range(7) if Board.is_valid_location(board, c)]
     best_col = random.choice(valid_loc)
     best_result = -1000000000
     for col in range(7):
         if Board.is_valid_location(board, col):
             Board.drop_piece(board, col, 2)
-            result = minimax(board, depth-1, False)
+            result = minimax(board, depth-1, False) if with_alpha_beta == 1 else minimax_alpha_beta(board, depth-1, False, -1000000000, 1000000000)
             undo_move(board, col)
 
             if result > best_result:
                 best_result = result
                 best_col = col
     return best_col
+
+
+
