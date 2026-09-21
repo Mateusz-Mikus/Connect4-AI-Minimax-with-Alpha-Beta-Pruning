@@ -157,13 +157,16 @@ def minimax(board, depth, maximizingBot):
 
 
 def get_best_move(board, depth, with_alpha_beta):
-    valid_loc = [c for c in range(7) if Board.is_valid_location(board, c)]
-    best_col = random.choice(valid_loc)
+    if depth < 1:
+        raise ValueError("Głębokość musi wynosić co najmniej 1")
+    if is_game_finished(board):
+        return None
+    best_col = None
     best_result = -1000000000
     for col in range(7):
         if Board.is_valid_location(board, col):
             Board.drop_piece(board, col, 2)
-            result = minimax(board, depth-1, False) if with_alpha_beta == 1 else minimax_alpha_beta(board, depth-1, False, -1000000000, 1000000000)
+            result = minimax_alpha_beta(board, depth-1, False, -1000000000, 1000000000) if with_alpha_beta else minimax(board, depth-1, False)
             undo_move(board, col)
 
             if result > best_result:

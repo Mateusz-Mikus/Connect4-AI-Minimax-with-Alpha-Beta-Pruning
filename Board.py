@@ -45,5 +45,7 @@ def check_win(board, piece):
                 board[r+3][c+3] == piece):
                 return True
 
+    return False
+
 def is_valid_location(board, col):
-    return board[0][col] == 0
+    return 0 <= col < 7 and board[0][col] == 0
