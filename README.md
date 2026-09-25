@@ -1,10 +1,15 @@
 # Connect Four
 
-Gra „connect four” w Pythonie z interfejsem Pygame. Gracz gra przeciwko
+Gra „Connect Four” w Pythonie z interfejsem Pygame. Gracz gra przeciwko
 botowi, wybierając algorytm myślenia bota (minimax lub minimax z przycinaniem alfa-beta).
 
 Można ustawić głębokość przeszukiwania od 1 do 8. Gra pokazuje czas obliczania
 ruchu, co pozwala porównać algorytmy przy tej samej pozycji i głębokości.
+
+## GUI
+
+<img width="700" height="974" alt="Connect Four GUI" src="https://github.com/user-attachments/assets/b8afbed4-ab3c-4ec7-9bdb-1b19680a065a" />
+
 
 ## Uruchomienie
 
